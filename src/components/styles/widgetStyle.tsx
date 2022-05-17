@@ -19,7 +19,7 @@ const ToolTip = tw.div`
 
 const TextArea = tw.textarea`
   min-w-[304px]
-  min-h[112px]
+  min-h-[112px]
   w-full
   
   text-sm
@@ -59,6 +59,9 @@ const Button = tw.button`
   focus:ring-offset-zinc-900
   focus:ring-brand-500
   transition-colors
+  
+  disabled:opacity-50
+  disabled:hover:bg-brand-500
 `
 
 const Link = tw.a`

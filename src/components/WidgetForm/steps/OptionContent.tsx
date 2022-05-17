@@ -1,20 +1,38 @@
-import { Dispatch, SetStateAction } from "react"
-import { ArrowLeft, Camera } from "phosphor-react"
+import { ArrowLeft } from "phosphor-react"
+import { Dispatch, SetStateAction, useState } from "react"
 import { feedbackTypes, TFeedbackOptions } from "../../../constants/FeedbackTypes"
+import { ScreenshotButton } from "../../ScreenshotButton"
 import { Button, TextArea } from "../../styles/widgetStyle"
 import ClosedButton from "../../ClosedButton"
 
 type TOptionContentProps = {
   feedbackType: TFeedbackOptions
-  setFeedbackType: Dispatch<SetStateAction<"BUG" | "IDEA" | "OTHER" | null | undefined>>
+  clearForm: () => void
+  onFeedbackSend: () => void
 }
 
-const OptionContent = ({ feedbackType, setFeedbackType }: TOptionContentProps) => {
+const OptionContent = ({ feedbackType, clearForm, onFeedbackSend }: TOptionContentProps) => {
+  const [screenshot, setScreenshot] = useState<string | null>(null)
+  const [comment, setComment] = useState<string | null>(null)
   const { icon, title } = feedbackTypes[feedbackType]
+    
+  const clearScreenshot = () => setScreenshot(null)
+  
+  const handleSubmitForm = (event: React.FormEvent) => {
+    event.preventDefault()
+    console.log({
+      type: title,
+      screenshot,
+      comment
+    })
+    
+    onFeedbackSend()
+  }
+
   return (
     <>
       <header>
-        <button onClick={() => setFeedbackType(null)} className="top-5 left-5 absolute text-zinc-400 hover:text-zinc-100">
+        <button onClick={clearForm} className="top-5 left-5 absolute text-zinc-400 hover:text-zinc-100">
           <ArrowLeft weight="bold" className="w-4 h-4" />
         </button>
         <div className="flex gap-2 items-center">
@@ -23,19 +41,15 @@ const OptionContent = ({ feedbackType, setFeedbackType }: TOptionContentProps) =
         </div>
         <ClosedButton />
       </header>
-      <form className="my-4 w-full">
+      <form onSubmit={handleSubmitForm} className="my-4 w-full">
         <TextArea
           placeholder="Conte com detalhes o que está acontecendo"
+          onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) => setComment(event.target.value)}
         />
         
-        <footer className="flex gap-2 mt-2">
-          <button
-            type="button"
-            className="p-2 bg-zinc-800 rounded-md border-transparent hover:bg-zinc-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:ring-brand-500"
-          >
-            <Camera className="w-6 h-6 text-zinc-100" />
-          </button>
-          <Button type="submit"> Enviar Feedback </Button>
+        <footer className="flex gap-2 mt-2" >
+          <ScreenshotButton screenshot={screenshot} setScreenshot={setScreenshot} clearScreenshot={clearScreenshot} />
+          <Button disabled={!comment?.length} type="submit"> Enviar Feedback </Button>
         </footer>
       </form>
     </>
