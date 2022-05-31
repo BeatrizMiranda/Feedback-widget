@@ -12,7 +12,6 @@ type TScreenshotButton = {
 export const ScreenshotButton = ({ screenshot, setScreenshot, clearScreenshot }: TScreenshotButton) => {
   const [isTakingScreenshot, setIsTakingScreenshot] = useState(false)
   
-  
   const handleTakeScreenshot = async () => {
     setIsTakingScreenshot(true)
     const canvas = await html2canvas(document.querySelector('html')!)
