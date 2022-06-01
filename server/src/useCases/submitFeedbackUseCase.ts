@@ -13,8 +13,16 @@ export class SubmitFeedbackUseCase {
     private mailAdapter: MailAdapter
   ) {}
   
-  async execute(request: SubmitFeedbackUseCaseRequest) {
+  async execute(request: SubmitFeedbackUseCaseRequest) { 
     const { type, screenshot, comment } = request
+      
+    if(screenshot && !screenshot.startsWith('data:image/png;base64'))
+      throw new Error('Invalid screenshot format.')
+      
+    if(!type || !comment) {
+      const emptyFields = !type && !comment ? 'type and comment' : !type ? 'type' : 'comment'
+      throw new Error(`Invalid empty value for ${emptyFields}.`)
+    }
     
     this.feedbacksRepository.create({
       type,
