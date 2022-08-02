@@ -9,6 +9,7 @@ export const theme = {
     text_primary: '#F4F4F5',
     text_secondary: '#A1A1AA',
     text_on_brand_color: '#FFFFFF',
+    errorRed: '#cc0000',
 
     stroke: '#52525B'
   },

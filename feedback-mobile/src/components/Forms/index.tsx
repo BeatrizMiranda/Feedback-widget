@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { ArrowLeft } from 'phosphor-react-native';
-import { View, TextInput, Image, Text,TouchableOpacity } from 'react-native'
 import { captureScreen } from 'react-native-view-shot'
+import { View, TextInput, Image, Text,TouchableOpacity } from 'react-native'
+import * as FileSystem from 'expo-file-system'
 
 import { feedbackTypes } from '../../utils/feedbackTypes';
 import { theme } from '../../theme';
 
-import Button from '../Button';
-import ScreenShotButton from '../ScreenshotButton';
+import { api } from '../../libs/api';
 import { FeedbackType } from '../Widget';
+import ScreenShotButton from '../ScreenshotButton';
+import Button from '../Button';
 
 import { styles } from './styles';
 
@@ -20,6 +22,8 @@ interface Props {
 
 const Forms = ({ feedbackType, handleBackButtonClick, onFeedbackSent }: Props) => {
   const [screenshot, setScreenshot] = useState<string | null>(null)
+  const [hasError, setHasError] = useState(false)
+  const [comment, setComment] = useState<string>('')
   const [isSendingFeedback, setIsSendingFeedback] = useState(false)
   const feedbackTypesInfo = feedbackTypes[feedbackType]
   
@@ -38,11 +42,21 @@ const Forms = ({ feedbackType, handleBackButtonClick, onFeedbackSent }: Props) =
     if (isSendingFeedback) return
 
     setIsSendingFeedback(true)
+    const screenshotBase64 = screenshot && await FileSystem.readAsStringAsync(screenshot, { encoding: 'base64' }) 
     
-    
-    
-    
-    setIsSendingFeedback(false)
+    try {      
+      await api.post('/feedbacks', {
+        type: feedbackType,
+        screenshot: `data:image/png;base64,${screenshotBase64}`,
+        comment
+      })
+      
+      onFeedbackSent()
+    } catch (error) {
+      console.error(`error ${error}`)
+      setHasError(true)
+      setIsSendingFeedback(false)
+    } 
   }
 
   return (
@@ -67,8 +81,12 @@ const Forms = ({ feedbackType, handleBackButtonClick, onFeedbackSent }: Props) =
         </View>
       </View>
       
+      {hasError && <Text style={styles.errorText}>Something went wrong, please try again later</Text>}
+
       <TextInput 
         multiline
+        onFocus={() => setHasError(false)}
+        onChangeText={setComment}
         style={styles.input}
         placeholder='Algo não está funcionando? Queremos corrigir Conte com detalher o que está acontecendo...'
         placeholderTextColor={theme.colors.text_secondary}

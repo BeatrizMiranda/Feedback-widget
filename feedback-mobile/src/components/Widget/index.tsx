@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useCallback, useRef, useState } from 'react'
 import BottomSheet from '@gorhom/bottom-sheet'
 import { TouchableOpacity } from 'react-native'
 import { ChatTeardropDots } from 'phosphor-react-native'
@@ -26,8 +26,12 @@ const Widget = () => {
     setFeedbackSent(false)
   }
   
+  const handleSheetChanges = useCallback((index: number) => {
+    if (index === 0) handleBackButtonClick()
+  }, []);
+  
   const getContentToShow = () => {
-    if (feedbackSent) return <Success handleSendOtherFeedback={() => setFeedbackSent(false)}/>
+    if (feedbackSent) return <Success handleSendOtherFeedback={handleBackButtonClick}/>
     if (!feedbackType) return <Options handleSelectOption={setFeedbackType} />
     
     return (
@@ -52,6 +56,7 @@ const Widget = () => {
         ref={bottomSheetRef}
         snapPoints={[1, 280]}
         backgroundStyle={styles.modal}
+        onChange={handleSheetChanges}
         handleIndicatorStyle={styles.indicator}
       >
         {getContentToShow()}

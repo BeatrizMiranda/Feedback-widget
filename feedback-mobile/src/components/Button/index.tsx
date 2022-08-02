@@ -13,7 +13,6 @@ const Button = ({ isLoading, ...rest }: Props) => {
     <TouchableOpacity
       {...rest}
       style={styles.container}
-      onPress={() => {}}
     >
       {isLoading ? (
         <ActivityIndicator 

@@ -23,6 +23,11 @@ export const styles = StyleSheet.create({
     color: theme.colors.text_primary,
     fontFamily: theme.fonts.medium
   },
+  errorText: {
+    fontSize: 14, 
+    color: theme.colors.errorRed,
+    fontFamily: theme.fonts.medium
+  },
   image: {
     width: 24,
     height: 24,
