@@ -5,10 +5,6 @@ import { NodemailerAdapter } from "./adapters/nodemailer/nodemailerMailAdapter";
 
 export const routes = express.Router();
 
-routes.get("/", (_, res) => {
-  return res.status(200).send("oi");
-});
-
 routes.post("/feedbacks", async (req, res) => {
   const { type, comment, screenshot } = req.body;
   const prismaFeedbacksRepository = new PrismaFeedbacksRepository();
