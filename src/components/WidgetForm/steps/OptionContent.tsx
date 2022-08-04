@@ -5,6 +5,7 @@ import { Button, TextArea } from "../../styles/widgetStyle"
 import { feedbackTypes, TFeedbackOptions } from "../../../constants/FeedbackTypes"
 import { api } from "../../../lib/api" 
 import ClosedButton from "../../ClosedButton"
+import Loading from "../../Loading"
 
 type TOptionContentProps = {
   feedbackType: TFeedbackOptions
@@ -15,6 +16,7 @@ type TOptionContentProps = {
 
 const OptionContent = ({ feedbackType, clearForm, onFeedbackSend, onFeedbackError }: TOptionContentProps) => {
   const [screenshot, setScreenshot] = useState<string | null>(null)
+  const [isSendingFeedback, setIsSendingFeedback] = useState(false)
   const [comment, setComment] = useState<string | null>(null)
   const { icon, title } = feedbackTypes[feedbackType]
     
@@ -22,7 +24,8 @@ const OptionContent = ({ feedbackType, clearForm, onFeedbackSend, onFeedbackErro
   
   const handleSubmitForm = async (event: React.FormEvent) => {
     event.preventDefault()
-
+    setIsSendingFeedback(true)
+    
     try {
       await api.post('/feedbacks', {
         type: feedbackType,
@@ -36,6 +39,8 @@ const OptionContent = ({ feedbackType, clearForm, onFeedbackSend, onFeedbackErro
       onFeedbackError()
       console.error(errorMessage)
     }
+    
+    setIsSendingFeedback(false)
   }
 
   return (
@@ -58,7 +63,9 @@ const OptionContent = ({ feedbackType, clearForm, onFeedbackSend, onFeedbackErro
         
         <footer className="flex gap-2 mt-2" >
           <ScreenshotButton screenshot={screenshot} setScreenshot={setScreenshot} clearScreenshot={clearScreenshot} />
-          <Button disabled={!comment?.length} type="submit"> Enviar Feedback </Button>
+          <Button disabled={!comment?.length || isSendingFeedback} type="submit">
+            {isSendingFeedback ? <Loading /> : 'Enviar Feedback' }
+          </Button>
         </footer>
       </form>
     </>
