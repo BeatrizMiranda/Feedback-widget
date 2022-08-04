@@ -51,7 +51,7 @@ const Button = tw.button`
   flex
   justify-center
   items-center
-  text-sm
+  text-md
   hover:bg-brand-300
   focus:outline-none
   focus:ring-2
