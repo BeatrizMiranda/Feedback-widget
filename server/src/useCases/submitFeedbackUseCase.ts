@@ -16,10 +16,11 @@ export class SubmitFeedbackUseCase {
   async execute(request: SubmitFeedbackUseCaseRequest) { 
     const { type, screenshot, comment } = request
       
-    if(screenshot && !screenshot.startsWith('data:image/png;base64'))
+    if (screenshot && !screenshot.startsWith('data:image/png;base64')) { 
       throw new Error('Invalid screenshot format.')
+    }
       
-    if(!type || !comment) {
+    if (!type || !comment) {
       const emptyFields = !type && !comment ? 'type and comment' : !type ? 'type' : 'comment'
       throw new Error(`Invalid empty value for ${emptyFields}.`)
     }

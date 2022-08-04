@@ -1,32 +1,41 @@
+import { useState } from "react"
 import { ArrowLeft } from "phosphor-react"
-import { Dispatch, SetStateAction, useState } from "react"
-import { feedbackTypes, TFeedbackOptions } from "../../../constants/FeedbackTypes"
 import { ScreenshotButton } from "../../ScreenshotButton"
 import { Button, TextArea } from "../../styles/widgetStyle"
+import { feedbackTypes, TFeedbackOptions } from "../../../constants/FeedbackTypes"
+import { api } from "../../../lib/api" 
 import ClosedButton from "../../ClosedButton"
 
 type TOptionContentProps = {
   feedbackType: TFeedbackOptions
   clearForm: () => void
   onFeedbackSend: () => void
+  onFeedbackError: () => void
 }
 
-const OptionContent = ({ feedbackType, clearForm, onFeedbackSend }: TOptionContentProps) => {
+const OptionContent = ({ feedbackType, clearForm, onFeedbackSend, onFeedbackError }: TOptionContentProps) => {
   const [screenshot, setScreenshot] = useState<string | null>(null)
   const [comment, setComment] = useState<string | null>(null)
   const { icon, title } = feedbackTypes[feedbackType]
     
   const clearScreenshot = () => setScreenshot(null)
   
-  const handleSubmitForm = (event: React.FormEvent) => {
+  const handleSubmitForm = async (event: React.FormEvent) => {
     event.preventDefault()
-    console.log({
-      type: title,
-      screenshot,
-      comment
-    })
-    
-    onFeedbackSend()
+
+    try {
+      await api.post('/feedbacks', {
+        type: feedbackType,
+        comment,
+        screenshot 
+      })
+      
+      onFeedbackSend()
+    } catch(error: any) {
+      const errorMessage = error?.response?.data?.message ?? 'Something went wrong' 
+      onFeedbackError()
+      console.error(errorMessage)
+    }
   }
 
   return (
